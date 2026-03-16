@@ -2,112 +2,175 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Morning Routine Game!</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Anya's Sequencing Game!</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root {
-    --sun: #FFD93D;
-    --sky: #6EC6FF;
-    --pink: #FF6B9D;
-    --green: #4ADE80;
-    --orange: #FF9F43;
-    --purple: #A78BFA;
-    --red: #FF6B6B;
-    --bg: #FFF8E7;
-  }
-
   body {
     font-family: 'Nunito', sans-serif;
-    background: var(--bg);
     min-height: 100vh;
     overflow-x: hidden;
     user-select: none;
     -webkit-user-select: none;
-    position: relative;
+    transition: background 0.6s;
   }
 
-  /* floating clouds */
-  .cloud {
-    position: fixed;
-    font-size: 60px;
-    opacity: 0.3;
-    animation: floatCloud 20s linear infinite;
-    z-index: 0;
-    pointer-events: none;
-  }
-  .cloud:nth-child(1) { top: 5%; animation-duration: 25s; font-size: 50px; }
-  .cloud:nth-child(2) { top: 15%; animation-duration: 30s; animation-delay: -8s; font-size: 70px; }
-  .cloud:nth-child(3) { top: 70%; animation-duration: 22s; animation-delay: -15s; font-size: 45px; }
+  /* ===== THEME BACKGROUNDS ===== */
+  body.theme-morning  { background: #FFF8E7; }
+  body.theme-cake     { background: #FFF0F5; }
+  body.theme-school   { background: #F0F8FF; }
+  body.theme-road     { background: #F5F0E8; }
+  body.theme-space    { background: #0B0E2D; color: #fff; }
 
-  @keyframes floatCloud {
+  /* Floating decorations */
+  .bg-deco {
+    position: fixed; pointer-events: none; z-index: 0; opacity: 0.25;
+    animation: floatDeco 18s linear infinite;
+  }
+  .bg-deco:nth-child(1) { top: 5%; font-size: 50px; animation-duration: 25s; }
+  .bg-deco:nth-child(2) { top: 20%; font-size: 65px; animation-duration: 30s; animation-delay: -10s; }
+  .bg-deco:nth-child(3) { top: 65%; font-size: 40px; animation-duration: 22s; animation-delay: -16s; }
+
+  @keyframes floatDeco {
     from { transform: translateX(110vw); }
-    to   { transform: translateX(-20vw); }
+    to   { transform: translateX(-15vw); }
   }
 
-  .game-container {
-    position: relative;
-    z-index: 1;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px 16px 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
+  /* ===== START SCREEN ===== */
+  .start-screen {
+    position: fixed; inset: 0; z-index: 200;
+    background: linear-gradient(170deg, #FFF8E7 0%, #FFE4B5 40%, #FFDAB9 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
   }
-
-  /* Title area */
-  .title-area {
-    text-align: center;
-    margin-bottom: 12px;
-  }
-
-  .sun-emoji {
-    font-size: 56px;
-    animation: sunPulse 2s ease-in-out infinite;
-    display: block;
-  }
+  .start-screen.hidden { display: none; }
+  .start-sun { font-size: 100px; animation: sunPulse 2s ease-in-out infinite; }
 
   @keyframes sunPulse {
     0%, 100% { transform: scale(1) rotate(0deg); }
     50% { transform: scale(1.15) rotate(10deg); }
   }
 
-  h1 {
-    font-family: 'Fredoka One', cursive;
-    font-size: 32px;
-    color: #FF6B9D;
-    text-shadow: 3px 3px 0 #FFD93D;
-    line-height: 1.1;
+  .start-title {
+    font-family: 'Fredoka One', cursive; font-size: 36px; color: #FF6B9D;
+    text-shadow: 3px 3px 0 #FFD93D; text-align: center; line-height: 1.2;
   }
 
-  .subtitle {
-    font-size: 16px;
-    color: #888;
-    font-weight: 700;
-    margin-top: 4px;
+  .start-btn {
+    margin-top: 12px; padding: 24px 56px;
+    font-family: 'Fredoka One', cursive; font-size: 28px; color: #fff;
+    background: linear-gradient(145deg, #FF9F43, #e67e22);
+    border: none; border-radius: 60px; cursor: pointer;
+    box-shadow: 0 8px 0 #c0690f, 0 12px 30px rgba(255,159,67,0.5);
+    animation: btnBounce 1.5s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent; line-height: 1.3;
   }
+  .start-btn:active { transform: translateY(6px); box-shadow: 0 2px 0 #c0690f; }
+
+  @keyframes btnBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .start-hint {
+    font-weight: 900; font-size: 18px; color: #FF6B9D;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* ===== LEVEL SELECT ===== */
+  .level-select {
+    position: fixed; inset: 0; z-index: 150;
+    background: linear-gradient(170deg, #FFF8E7 0%, #E8F4FD 50%, #FFF0F5 100%);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 30px 16px; overflow-y: auto;
+  }
+  .level-select.hidden { display: none; }
+
+  .level-select h1 {
+    font-family: 'Fredoka One', cursive; font-size: 32px; color: #FF6B9D;
+    text-shadow: 2px 2px 0 #FFD93D; margin-bottom: 24px;
+  }
+
+  .level-grid {
+    display: flex; flex-direction: column; gap: 14px;
+    width: 100%; max-width: 400px;
+  }
+
+  .level-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px; border-radius: 20px; border: none;
+    font-family: 'Fredoka One', cursive; font-size: 18px;
+    color: #fff; cursor: pointer;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.1);
+    transition: transform 0.15s; -webkit-tap-highlight-color: transparent;
+    text-align: left; width: 100%; position: relative; overflow: hidden;
+  }
+  .level-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 45%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+    border-radius: 20px 20px 0 0; pointer-events: none;
+  }
+  .level-card:active { transform: scale(0.96); }
+  .level-card.locked { filter: grayscale(0.7) opacity(0.5); cursor: not-allowed; }
+
+  .level-card .level-emoji { font-size: 36px; }
+  .level-card .level-info { display: flex; flex-direction: column; gap: 2px; }
+  .level-card .level-name { font-size: 20px; }
+  .level-card .level-detail { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; opacity: 0.85; }
+  .level-card .level-badge { position: absolute; right: 18px; font-size: 24px; }
+
+  .lc-morning { background: linear-gradient(135deg, #FF9F43, #e67e22); }
+  .lc-cake    { background: linear-gradient(135deg, #FF6B9D, #e84393); }
+  .lc-school  { background: linear-gradient(135deg, #6EC6FF, #3498db); }
+  .lc-road    { background: linear-gradient(135deg, #A78BFA, #8b5cf6); }
+  .lc-space   { background: linear-gradient(135deg, #1a1a4e, #2d1b69); }
+
+  /* ===== GAME SCREEN ===== */
+  .game-container {
+    position: relative; z-index: 1; max-width: 500px; margin: 0 auto;
+    padding: 16px 16px 40px; display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh;
+  }
+  .game-container.hidden { display: none; }
+
+  .game-header { display: flex; align-items: center; width: 100%; margin-bottom: 8px; gap: 10px; }
+
+  .back-btn {
+    background: rgba(0,0,0,0.08); border: none; border-radius: 50%;
+    width: 44px; height: 44px; font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back-btn:active { background: rgba(0,0,0,0.15); }
+  body.theme-space .back-btn { background: rgba(255,255,255,0.1); }
+
+  .game-title-area { flex: 1; text-align: center; }
+  .game-icon { font-size: 40px; animation: sunPulse 2.5s ease-in-out infinite; display: block; }
+
+  .game-title { font-family: 'Fredoka One', cursive; font-size: 24px; line-height: 1.1; }
+  .theme-morning .game-title { color: #e67e22; text-shadow: 2px 2px 0 #FFD93D; }
+  .theme-cake .game-title    { color: #e84393; text-shadow: 2px 2px 0 #FFB6C1; }
+  .theme-school .game-title  { color: #2980b9; text-shadow: 2px 2px 0 #AED6F1; }
+  .theme-road .game-title    { color: #8b5cf6; text-shadow: 2px 2px 0 #DDD6FE; }
+  .theme-space .game-title   { color: #E0D4FF; text-shadow: 2px 2px 0 #4a3a8a; }
+
+  .game-subtitle { font-size: 14px; font-weight: 700; opacity: 0.55; margin-top: 2px; }
 
   /* Progress stars */
-  .progress-bar {
-    display: flex;
-    gap: 10px;
-    margin: 10px 0 16px;
-    justify-content: center;
-  }
-
+  .progress-bar { display: flex; gap: 6px; margin: 8px 0 12px; justify-content: center; flex-wrap: wrap; }
   .progress-star {
-    font-size: 32px;
-    filter: grayscale(1) opacity(0.3);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 24px; filter: grayscale(1) opacity(0.25);
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
   }
-
   .progress-star.done {
     filter: grayscale(0) opacity(1);
-    animation: starPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: starPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
   }
 
   @keyframes starPop {
@@ -118,102 +181,71 @@
 
   /* Done tray */
   .done-tray {
-    width: 100%;
-    min-height: 64px;
-    background: rgba(74, 222, 128, 0.15);
-    border: 3px dashed var(--green);
-    border-radius: 20px;
-    padding: 10px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 16px;
-    transition: background 0.3s;
+    width: 100%; min-height: 52px;
+    border: 3px dashed; border-radius: 18px;
+    padding: 8px; display: flex; gap: 5px;
+    flex-wrap: wrap; justify-content: center; align-items: center;
+    margin-bottom: 14px;
   }
+  .theme-morning .done-tray { border-color: #4ADE80; background: rgba(74,222,128,0.1); }
+  .theme-cake .done-tray    { border-color: #FF6B9D; background: rgba(255,107,157,0.1); }
+  .theme-school .done-tray  { border-color: #6EC6FF; background: rgba(110,198,255,0.1); }
+  .theme-road .done-tray    { border-color: #A78BFA; background: rgba(167,139,250,0.1); }
+  .theme-space .done-tray   { border-color: #7C6FE0; background: rgba(124,111,224,0.15); }
 
   .done-tray-label {
-    font-family: 'Fredoka One', cursive;
-    color: var(--green);
-    font-size: 14px;
-    letter-spacing: 1px;
-    width: 100%;
-    text-align: center;
+    font-family: 'Fredoka One', cursive; font-size: 12px;
+    letter-spacing: 1px; width: 100%; text-align: center; opacity: 0.6;
   }
 
   .done-item {
-    width: 56px;
-    height: 56px;
-    background: var(--green);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    animation: dropIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 3px 10px rgba(74, 222, 128, 0.4);
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    animation: dropIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
   }
+  .theme-morning .done-item { background: #4ADE80; box-shadow: 0 2px 6px rgba(74,222,128,0.4); }
+  .theme-cake .done-item    { background: #FF6B9D; box-shadow: 0 2px 6px rgba(255,107,157,0.4); }
+  .theme-school .done-item  { background: #6EC6FF; box-shadow: 0 2px 6px rgba(110,198,255,0.4); }
+  .theme-road .done-item    { background: #A78BFA; box-shadow: 0 2px 6px rgba(167,139,250,0.4); }
+  .theme-space .done-item   { background: #5B4FC7; box-shadow: 0 2px 6px rgba(91,79,199,0.5); }
 
   @keyframes dropIn {
-    0% { transform: scale(0) translateY(-40px); opacity: 0; }
+    0% { transform: scale(0) translateY(-30px); opacity: 0; }
     100% { transform: scale(1) translateY(0); opacity: 1; }
   }
 
   /* Buttons grid */
-  .buttons-area {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
+  .buttons-area { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .buttons-area.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 
   .routine-btn {
-    aspect-ratio: 1;
-    border: none;
-    border-radius: 24px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-family: 'Fredoka One', cursive;
-    font-size: 15px;
-    color: #fff;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-    transition: transform 0.15s, box-shadow 0.15s;
-    position: relative;
-    overflow: hidden;
+    aspect-ratio: 1; border: none; border-radius: 22px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    font-family: 'Fredoka One', cursive; font-size: 13px;
+    color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    transition: transform 0.15s; position: relative; overflow: hidden;
     -webkit-tap-highlight-color: transparent;
   }
-
   .routine-btn::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 40%;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%;
     background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
-    border-radius: 24px 24px 0 0;
-    pointer-events: none;
+    border-radius: 22px 22px 0 0; pointer-events: none;
   }
+  .routine-btn:active { transform: scale(0.93); }
 
-  .routine-btn:active {
-    transform: scale(0.93);
-  }
+  .routine-btn .emoji { font-size: 44px; line-height: 1; }
+  .routine-btn.emoji-only .emoji { font-size: 52px; }
 
-  .routine-btn .emoji {
-    font-size: 52px;
-    line-height: 1;
-  }
+  .routine-btn.c0 { background: linear-gradient(145deg, #FF9F43, #e67e22); box-shadow: 0 5px 0 #c0690f, 0 7px 16px rgba(255,159,67,0.35); }
+  .routine-btn.c1 { background: linear-gradient(145deg, #6EC6FF, #3498db); box-shadow: 0 5px 0 #2176ad, 0 7px 16px rgba(110,198,255,0.35); }
+  .routine-btn.c2 { background: linear-gradient(145deg, #A78BFA, #8b5cf6); box-shadow: 0 5px 0 #6d3cc7, 0 7px 16px rgba(167,139,250,0.35); }
+  .routine-btn.c3 { background: linear-gradient(145deg, #FF6B9D, #e84393); box-shadow: 0 5px 0 #b92d72, 0 7px 16px rgba(255,107,157,0.35); }
+  .routine-btn.c4 { background: linear-gradient(145deg, #4ADE80, #22c55e); box-shadow: 0 5px 0 #16873f, 0 7px 16px rgba(74,222,128,0.35); }
+  .routine-btn.c5 { background: linear-gradient(145deg, #FBBF24, #d97706); box-shadow: 0 5px 0 #a35c05, 0 7px 16px rgba(251,191,36,0.35); }
+  .routine-btn.c6 { background: linear-gradient(145deg, #F87171, #dc2626); box-shadow: 0 5px 0 #a71d1d, 0 7px 16px rgba(248,113,113,0.35); }
+  .routine-btn.c7 { background: linear-gradient(145deg, #34D399, #059669); box-shadow: 0 5px 0 #046c4e, 0 7px 16px rgba(52,211,153,0.35); }
+  .routine-btn.c8 { background: linear-gradient(145deg, #FB923C, #ea580c); box-shadow: 0 5px 0 #b34309, 0 7px 16px rgba(251,146,60,0.35); }
 
-  .routine-btn.color-0 { background: linear-gradient(145deg, #FF9F43, #e67e22); box-shadow: 0 6px 0 #c0690f, 0 8px 20px rgba(255, 159, 67, 0.4); }
-  .routine-btn.color-1 { background: linear-gradient(145deg, #6EC6FF, #3498db); box-shadow: 0 6px 0 #2176ad, 0 8px 20px rgba(110, 198, 255, 0.4); }
-  .routine-btn.color-2 { background: linear-gradient(145deg, #A78BFA, #8b5cf6); box-shadow: 0 6px 0 #6d3cc7, 0 8px 20px rgba(167, 139, 250, 0.4); }
-  .routine-btn.color-3 { background: linear-gradient(145deg, #FF6B9D, #e84393); box-shadow: 0 6px 0 #b92d72, 0 8px 20px rgba(255, 107, 157, 0.4); }
-  .routine-btn.color-4 { background: linear-gradient(145deg, #4ADE80, #22c55e); box-shadow: 0 6px 0 #16873f, 0 8px 20px rgba(74, 222, 128, 0.4); }
-
-  /* Wiggle animation for wrong tap */
   @keyframes wiggle {
     0%, 100% { transform: translateX(0) rotate(0); }
     15% { transform: translateX(-12px) rotate(-5deg); }
@@ -222,54 +254,39 @@
     60% { transform: translateX(6px) rotate(2deg); }
     75% { transform: translateX(-3px) rotate(-1deg); }
   }
+  .routine-btn.wiggling { animation: wiggle 0.5s ease; }
 
-  .routine-btn.wiggling {
-    animation: wiggle 0.5s ease;
-  }
-
-  /* Flash green on correct */
   .routine-btn.correct-flash {
     animation: correctPop 0.4s ease;
-    background: var(--green) !important;
-    box-shadow: 0 0 30px rgba(74, 222, 128, 0.8) !important;
+    background: #4ADE80 !important;
+    box-shadow: 0 0 30px rgba(74,222,128,0.8) !important;
   }
-
   @keyframes correctPop {
     0% { transform: scale(1); }
     40% { transform: scale(1.15); }
     100% { transform: scale(0.5); opacity: 0; }
   }
+  .routine-btn.hidden { visibility: hidden; pointer-events: none; }
 
-  .routine-btn.hidden {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  /* Celebration overlay */
+  /* ===== CELEBRATION ===== */
   .celebration {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 248, 231, 0.95);
+    display: none; position: fixed; inset: 0; z-index: 100;
+    flex-direction: column; align-items: center; justify-content: center;
   }
-
-  .celebration.active {
-    display: flex;
-  }
+  .theme-morning .celebration { background: rgba(255,248,231,0.95); }
+  .theme-cake .celebration    { background: rgba(255,240,245,0.95); }
+  .theme-school .celebration  { background: rgba(240,248,255,0.95); }
+  .theme-road .celebration    { background: rgba(245,240,232,0.95); }
+  .theme-space .celebration   { background: rgba(11,14,45,0.95); }
+  .celebration.active { display: flex; }
 
   .celebration h2 {
-    font-family: 'Fredoka One', cursive;
-    font-size: 42px;
-    color: var(--pink);
-    text-shadow: 3px 3px 0 var(--sun);
-    animation: bounceTitle 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-    text-align: center;
-    line-height: 1.2;
+    font-family: 'Fredoka One', cursive; font-size: 36px;
+    color: #FF6B9D; text-shadow: 3px 3px 0 #FFD93D;
+    animation: bounceTitle 0.8s cubic-bezier(0.34,1.56,0.64,1);
+    text-align: center; line-height: 1.2;
   }
+  .theme-space .celebration h2 { color: #E0D4FF; text-shadow: 3px 3px 0 #4a3a8a; }
 
   @keyframes bounceTitle {
     0% { transform: scale(0); }
@@ -278,538 +295,521 @@
   }
 
   .celebration .big-emoji {
-    font-size: 80px;
-    animation: celebSpin 1s ease;
-    margin: 16px 0;
+    font-size: 66px; animation: celebSpin 1s ease; margin: 12px 0;
   }
-
   @keyframes celebSpin {
     0% { transform: scale(0) rotate(-180deg); }
     100% { transform: scale(1) rotate(0deg); }
   }
 
-  .play-again-btn {
-    margin-top: 20px;
-    padding: 18px 48px;
-    font-family: 'Fredoka One', cursive;
-    font-size: 24px;
-    color: #fff;
-    background: linear-gradient(145deg, #FF6B9D, #e84393);
-    border: none;
-    border-radius: 60px;
-    cursor: pointer;
-    box-shadow: 0 6px 0 #b92d72, 0 10px 25px rgba(255, 107, 157, 0.4);
-    transition: transform 0.1s;
-    -webkit-tap-highlight-color: transparent;
-    animation: bounceTitle 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
-  }
+  .celeb-buttons { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; justify-content: center; }
 
-  .play-again-btn:active {
-    transform: translateY(4px);
-    box-shadow: 0 2px 0 #b92d72;
+  .celeb-btn {
+    padding: 14px 28px;
+    font-family: 'Fredoka One', cursive; font-size: 18px; color: #fff;
+    border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.15);
+    transition: transform 0.1s; -webkit-tap-highlight-color: transparent;
+    animation: bounceTitle 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.3s both;
   }
+  .celeb-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
+  .celeb-btn.replay   { background: linear-gradient(145deg, #6EC6FF, #3498db); }
+  .celeb-btn.next-lvl  { background: linear-gradient(145deg, #4ADE80, #22c55e); }
+  .celeb-btn.back-menu { background: linear-gradient(145deg, #FF9F43, #e67e22); }
 
-  /* Confetti canvas */
-  #confetti-canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 99;
-    pointer-events: none;
-  }
+  #confetti-canvas { position: fixed; inset: 0; z-index: 99; pointer-events: none; }
 
-  /* Glitter particles on celebration */
   .glitter {
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 101;
-    animation: glitterFall linear forwards;
+    position: fixed; width: 8px; height: 8px; border-radius: 50%;
+    pointer-events: none; z-index: 101; animation: glitterFall linear forwards;
   }
-
-  /* Start screen */
-  .start-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: linear-gradient(170deg, #FFF8E7 0%, #FFE4B5 40%, #FFDAB9 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-  }
-
-  .start-screen.hidden { display: none; }
-
-  .start-sun {
-    font-size: 100px;
-    animation: sunPulse 2s ease-in-out infinite;
-  }
-
-  .start-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: 40px;
-    color: #FF6B9D;
-    text-shadow: 3px 3px 0 #FFD93D;
-  }
-
-  .start-btn {
-    margin-top: 12px;
-    padding: 24px 56px;
-    font-family: 'Fredoka One', cursive;
-    font-size: 28px;
-    color: #fff;
-    background: linear-gradient(145deg, #FF9F43, #e67e22);
-    border: none;
-    border-radius: 60px;
-    cursor: pointer;
-    box-shadow: 0 8px 0 #c0690f, 0 12px 30px rgba(255, 159, 67, 0.5);
-    animation: startBtnBounce 1.5s ease-in-out infinite;
-    -webkit-tap-highlight-color: transparent;
-    line-height: 1.3;
-  }
-
-  .start-btn:active {
-    transform: translateY(6px);
-    box-shadow: 0 2px 0 #c0690f;
-  }
-
-  @keyframes startBtnBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-
-  .start-hint {
-    font-family: 'Nunito', sans-serif;
-    font-weight: 900;
-    font-size: 18px;
-    color: #FF6B9D;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
-
   @keyframes glitterFall {
     0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
     100% { opacity: 0; transform: translateY(100vh) rotate(720deg) scale(0.3); }
   }
+
+  /* Space stars */
+  .space-stars { display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .theme-space .space-stars { display: block; }
+  .space-star-dot {
+    position: absolute; background: #fff; border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; } }
 </style>
 </head>
-<body>
+<body class="theme-morning">
 
-<div class="cloud">☁️</div>
-<div class="cloud">☁️</div>
-<div class="cloud">☁️</div>
+<div class="space-stars" id="space-stars"></div>
+<div class="bg-deco" id="deco0"></div>
+<div class="bg-deco" id="deco1"></div>
+<div class="bg-deco" id="deco2"></div>
 
+<!-- Start screen -->
 <div class="start-screen" id="start-screen">
   <span class="start-sun">🌞</span>
-  <h1 class="start-title">Morning Routine!</h1>
+  <h1 class="start-title">Anya's<br>Sequencing Game!</h1>
   <button class="start-btn" id="start-btn">
-    <span style="font-size:40px;">👆</span><br>
-    Tap to Play!
+    <span style="font-size:40px;">👆</span><br>Tap to Play!
   </button>
   <p class="start-hint">🔊 Turn your sound on!</p>
 </div>
 
+<!-- Level select -->
+<div class="level-select hidden" id="level-select">
+  <h1>Pick a Level!</h1>
+  <div class="level-grid" id="level-grid"></div>
+</div>
+
 <canvas id="confetti-canvas"></canvas>
 
-<div class="game-container" id="game-container" style="display:none;">
-  <div class="title-area">
-    <span class="sun-emoji">🌞</span>
-    <h1>Morning Routine!</h1>
-    <p class="subtitle">Tap in the right order!</p>
+<!-- Game screen -->
+<div class="game-container hidden" id="game-container">
+  <div class="game-header">
+    <button class="back-btn" id="back-btn">⬅️</button>
+    <div class="game-title-area">
+      <span class="game-icon" id="game-icon"></span>
+      <h1 class="game-title" id="game-title"></h1>
+      <p class="game-subtitle" id="game-subtitle"></p>
+    </div>
+    <div style="width:44px;"></div>
   </div>
-
   <div class="progress-bar" id="progress-bar"></div>
-  <div class="done-tray" id="done-tray">
-    <span class="done-tray-label">✅ DONE</span>
-  </div>
+  <div class="done-tray" id="done-tray"><span class="done-tray-label">✅ DONE</span></div>
   <div class="buttons-area" id="buttons-area"></div>
 </div>
 
+<!-- Celebration -->
 <div class="celebration" id="celebration">
-  <h2>You Did It!</h2>
-  <div class="big-emoji">🎉🌟🎉</div>
-  <h2>Ready for the day!</h2>
-  <button class="play-again-btn" onclick="resetGame()">🔄 Play Again!</button>
+  <h2 id="celeb-title"></h2>
+  <div class="big-emoji" id="celeb-emoji"></div>
+  <h2 id="celeb-sub"></h2>
+  <div class="celeb-buttons">
+    <button class="celeb-btn replay" onclick="replayLevel()">🔄 Replay</button>
+    <button class="celeb-btn next-lvl" id="next-lvl-btn" onclick="goNextLevel()">➡️ Next Level</button>
+    <button class="celeb-btn back-menu" onclick="goToMenu()">🏠 Menu</button>
+  </div>
 </div>
 
 <script>
-  // --- Robust Audio System ---
+  // =============================
+  //   LEVEL DATA
+  // =============================
+  const LEVELS = [
+    {
+      id: 'morning', name: 'Morning Routine', icon: '🌞',
+      theme: 'theme-morning', decos: ['☁️','☁️','☁️'],
+      showLabels: true,
+      celebEmoji: '🎉🌟🎉', celebTitle: 'You Did It!', celebSub: 'Ready for the day!',
+      soundKey: { base: 523, scale: [1, 1.122, 1.26, 1.335, 1.498, 1.682, 1.888, 2], wrongBase: 150, type: 'triangle' },
+      steps: [
+        { emoji: '⏰', label: 'Wake Up' },
+        { emoji: '🪥', label: 'Brush Teeth' },
+        { emoji: '👕', label: 'Get Dressed' },
+        { emoji: '🥣', label: 'Eat Breakfast' },
+        { emoji: '🎒', label: 'Grab Bag' },
+      ]
+    },
+    {
+      id: 'cake', name: 'Bake a Cake', icon: '🎂',
+      theme: 'theme-cake', decos: ['🧁','🍰','🍩'],
+      showLabels: true,
+      celebEmoji: '🎂🧁🍰', celebTitle: 'Yummy!', celebSub: 'The cake is ready!',
+      soundKey: { base: 349, scale: [1, 1.122, 1.26, 1.414, 1.498, 1.682, 1.888, 2], wrongBase: 130, type: 'sine' },
+      steps: [
+        { emoji: '📖', label: 'Read Recipe' },
+        { emoji: '🥚', label: 'Crack Eggs' },
+        { emoji: '🥣', label: 'Mix Batter' },
+        { emoji: '🧈', label: 'Grease Pan' },
+        { emoji: '🔥', label: 'Bake in Oven' },
+        { emoji: '🎨', label: 'Add Frosting' },
+      ]
+    },
+    {
+      id: 'school', name: 'Day at School', icon: '🏫',
+      theme: 'theme-school', decos: ['📚','✏️','🎨'],
+      showLabels: false,
+      celebEmoji: '🏫⭐📚', celebTitle: 'School Star!', celebSub: 'What a great day!',
+      soundKey: { base: 392, scale: [1, 1.122, 1.26, 1.335, 1.498, 1.682, 1.782, 2], wrongBase: 140, type: 'triangle' },
+      steps: [
+        { emoji: '🚌' }, { emoji: '🔔' }, { emoji: '📖' }, { emoji: '✏️' },
+        { emoji: '🍎' }, { emoji: '⚽' }, { emoji: '🏠' },
+      ]
+    },
+    {
+      id: 'road', name: 'Build a Road', icon: '🛣️',
+      theme: 'theme-road', decos: ['🚧','🏗️','🚜'],
+      showLabels: false,
+      celebEmoji: '🛣️🚗💨', celebTitle: 'Road Complete!', celebSub: 'Cars can drive now!',
+      soundKey: { base: 294, scale: [1, 1.122, 1.26, 1.335, 1.498, 1.682, 1.888, 2], wrongBase: 110, type: 'sawtooth' },
+      steps: [
+        { emoji: '📐' }, { emoji: '🚜' }, { emoji: '🪨' }, { emoji: '🏗️' },
+        { emoji: '🛤️' }, { emoji: '🚧' }, { emoji: '🎨' }, { emoji: '🚗' },
+      ]
+    },
+    {
+      id: 'space', name: 'Go to Space', icon: '🚀',
+      theme: 'theme-space', decos: ['🌟','💫','🪐'],
+      showLabels: false,
+      celebEmoji: '🚀🌟🪐', celebTitle: 'Mission Complete!', celebSub: 'Welcome to the stars!',
+      soundKey: { base: 330, scale: [1, 1.122, 1.189, 1.335, 1.498, 1.587, 1.782, 2], wrongBase: 100, type: 'sine' },
+      steps: [
+        { emoji: '👩‍🚀' }, { emoji: '🔧' }, { emoji: '⛽' }, { emoji: '📡' },
+        { emoji: '🔢' }, { emoji: '🚀' }, { emoji: '🌍' }, { emoji: '🌙' }, { emoji: '🪐' },
+      ]
+    }
+  ];
+
+  // =============================
+  //   STATE
+  // =============================
+  let unlockedLevel = parseInt(localStorage.getItem('anya_unlocked') || '0');
+  let completedLevels = JSON.parse(localStorage.getItem('anya_completed') || '[]');
+  let currentLevelIndex = 0;
+  let currentStep = 0;
+
+  // =============================
+  //   AUDIO
+  // =============================
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   let audioCtx;
 
   function ensureAudio() {
-    if (!audioCtx) {
-      audioCtx = new AudioCtx();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    return audioCtx;
+    if (!audioCtx) audioCtx = new AudioCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
   }
 
-  // Safe current time that's never 0 (avoids non-finite float errors)
-  function now() {
-    return Math.max(audioCtx.currentTime, 0.001) + 0.01;
-  }
+  function safeNow() { return Math.max(audioCtx.currentTime, 0.001) + 0.01; }
 
-  // Helper: play a note with layered oscillators for a fuller sound
   function playNote(freq, startTime, duration, vol, type) {
     const ctx = audioCtx;
     const t = Math.max(startTime, 0.001);
-
     const master = ctx.createGain();
     master.gain.setValueAtTime(vol, t);
     master.gain.exponentialRampToValueAtTime(0.001, t + duration);
     master.connect(ctx.destination);
 
-    // Main tone
-    const osc1 = ctx.createOscillator();
-    osc1.type = type || 'triangle';
-    osc1.frequency.setValueAtTime(freq, t);
-    const g1 = ctx.createGain();
-    g1.gain.setValueAtTime(0.6, t);
-    osc1.connect(g1); g1.connect(master);
-    osc1.start(t); osc1.stop(t + duration);
+    const o1 = ctx.createOscillator(); o1.type = type || 'triangle';
+    o1.frequency.setValueAtTime(freq, t);
+    const g1 = ctx.createGain(); g1.gain.setValueAtTime(0.6, t);
+    o1.connect(g1); g1.connect(master); o1.start(t); o1.stop(t + duration);
 
-    // Octave layer for richness
-    const osc2 = ctx.createOscillator();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(freq * 2, t);
-    const g2 = ctx.createGain();
-    g2.gain.setValueAtTime(0.25, t);
-    osc2.connect(g2); g2.connect(master);
-    osc2.start(t); osc2.stop(t + duration);
-
-    // Sub layer for body
-    const osc3 = ctx.createOscillator();
-    osc3.type = 'sine';
-    osc3.frequency.setValueAtTime(freq / 2, t);
-    const g3 = ctx.createGain();
-    g3.gain.setValueAtTime(0.15, t);
-    osc3.connect(g3); g3.connect(master);
-    osc3.start(t); osc3.stop(t + duration);
+    const o2 = ctx.createOscillator(); o2.type = 'sine';
+    o2.frequency.setValueAtTime(freq * 2, t);
+    const g2 = ctx.createGain(); g2.gain.setValueAtTime(0.2, t);
+    o2.connect(g2); g2.connect(master); o2.start(t); o2.stop(t + duration);
   }
 
   function playCorrectSound() {
     ensureAudio();
-    const t = now();
-    playNote(523, t, 0.35, 0.5, 'triangle');
-    playNote(659, t + 0.08, 0.3, 0.5, 'triangle');
-    playNote(784, t + 0.16, 0.3, 0.5, 'triangle');
-    playNote(1047, t + 0.24, 0.45, 0.5, 'sine');
-
-    // Sparkle on top
-    const sparkle = audioCtx.createOscillator();
-    const sg = audioCtx.createGain();
-    sparkle.type = 'sine';
-    sparkle.frequency.setValueAtTime(2093, t + 0.28);
-    sparkle.frequency.exponentialRampToValueAtTime(3000, t + 0.45);
-    sg.gain.setValueAtTime(0.12, t + 0.28);
-    sg.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
-    sparkle.connect(sg); sg.connect(audioCtx.destination);
-    sparkle.start(t + 0.28); sparkle.stop(t + 0.55);
+    const t = safeNow();
+    const k = LEVELS[currentLevelIndex].soundKey;
+    playNote(k.base * k.scale[0], t, 0.3, 0.45, k.type);
+    playNote(k.base * k.scale[2], t + 0.08, 0.25, 0.45, k.type);
+    playNote(k.base * k.scale[4], t + 0.16, 0.25, 0.45, k.type);
+    playNote(k.base * k.scale[7], t + 0.24, 0.4, 0.5, 'sine');
   }
 
   function playWrongSound() {
     ensureAudio();
-    const t = now();
-
-    // Buzzer: two detuned square waves for a chunky "bzzzt"
-    [150, 157].forEach(freq => {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(freq, t);
-      osc.frequency.linearRampToValueAtTime(80, t + 0.3);
-      gain.gain.setValueAtTime(0.35, t);
-      gain.gain.setValueAtTime(0.35, t + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(t); osc.stop(t + 0.35);
+    const t = safeNow();
+    const k = LEVELS[currentLevelIndex].soundKey;
+    [k.wrongBase, k.wrongBase * 1.05].forEach(freq => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'square';
+      o.frequency.setValueAtTime(freq, t);
+      o.frequency.linearRampToValueAtTime(freq * 0.5, t + 0.3);
+      g.gain.setValueAtTime(0.3, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t + 0.35);
     });
-
-    // Low thud
-    const thud = audioCtx.createOscillator();
+    const th = audioCtx.createOscillator();
     const tg = audioCtx.createGain();
-    thud.type = 'sine';
-    thud.frequency.setValueAtTime(100, t);
-    thud.frequency.exponentialRampToValueAtTime(40, t + 0.2);
-    tg.gain.setValueAtTime(0.5, t);
+    th.type = 'sine';
+    th.frequency.setValueAtTime(80, t);
+    th.frequency.exponentialRampToValueAtTime(35, t + 0.2);
+    tg.gain.setValueAtTime(0.4, t);
     tg.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-    thud.connect(tg); tg.connect(audioCtx.destination);
-    thud.start(t); thud.stop(t + 0.25);
-
-    // Noise burst for texture
-    const bufferSize = audioCtx.sampleRate * 0.15;
-    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = noiseBuffer;
-    const ng = audioCtx.createGain();
-    ng.gain.setValueAtTime(0.2, t);
-    ng.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 300;
-    filter.Q.value = 2;
-    noise.connect(filter); filter.connect(ng); ng.connect(audioCtx.destination);
-    noise.start(t); noise.stop(t + 0.15);
+    th.connect(tg); tg.connect(audioCtx.destination);
+    th.start(t); th.stop(t + 0.25);
   }
 
   function playCelebrationSound() {
     ensureAudio();
-    const t = now();
-
-    // Triumphant fanfare scale
-    const notes = [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568];
-    notes.forEach((freq, i) => {
-      playNote(freq, t + i * 0.09, 0.4, 0.45, 'triangle');
-    });
-
-    // Big major chord at the end
+    const t = safeNow();
+    const k = LEVELS[currentLevelIndex].soundKey;
+    k.scale.forEach((m, i) => playNote(k.base * m, t + i * 0.09, 0.4, 0.4, k.type));
     setTimeout(() => {
-      const ct = now();
-      const chord = [523, 659, 784, 1047, 1319, 1568];
-      chord.forEach(f => {
-        playNote(f, ct, 1.5, 0.3, 'sine');
+      const ct = safeNow();
+      [k.scale[0], k.scale[2], k.scale[4], k.scale[7]].forEach(m => {
+        playNote(k.base * m, ct, 1.5, 0.25, 'sine');
+        playNote(k.base * m * 2, ct, 1.2, 0.08, 'sine');
       });
-
-      // Shimmer sweep
-      const shimmer = audioCtx.createOscillator();
-      const sg = audioCtx.createGain();
-      shimmer.type = 'sine';
-      shimmer.frequency.setValueAtTime(2000, ct);
-      shimmer.frequency.exponentialRampToValueAtTime(5000, ct + 0.6);
-      shimmer.frequency.exponentialRampToValueAtTime(3000, ct + 1.2);
-      sg.gain.setValueAtTime(0.08, ct);
-      sg.gain.linearRampToValueAtTime(0.12, ct + 0.3);
-      sg.gain.exponentialRampToValueAtTime(0.001, ct + 1.5);
-      shimmer.connect(sg); sg.connect(audioCtx.destination);
-      shimmer.start(ct); shimmer.stop(ct + 1.5);
-    }, notes.length * 90 + 100);
-
-    // Cheer: noise bursts to simulate crowd
-    for (let i = 0; i < 5; i++) {
+    }, k.scale.length * 90 + 100);
+    for (let i = 0; i < 4; i++) {
       setTimeout(() => {
-        const ct = now();
-        const bufSize = audioCtx.sampleRate * 0.3;
-        const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+        const ct = safeNow();
+        const bs = audioCtx.sampleRate * 0.2;
+        const buf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate);
         const d = buf.getChannelData(0);
-        for (let j = 0; j < bufSize; j++) d[j] = (Math.random() * 2 - 1);
-        const src = audioCtx.createBufferSource();
-        src.buffer = buf;
+        for (let j = 0; j < bs; j++) d[j] = (Math.random() * 2 - 1);
+        const src = audioCtx.createBufferSource(); src.buffer = buf;
         const g = audioCtx.createGain();
-        g.gain.setValueAtTime(0.06, ct);
-        g.gain.exponentialRampToValueAtTime(0.001, ct + 0.3);
+        g.gain.setValueAtTime(0.04, ct);
+        g.gain.exponentialRampToValueAtTime(0.001, ct + 0.2);
         const bp = audioCtx.createBiquadFilter();
-        bp.type = 'bandpass';
-        bp.frequency.value = 1500 + Math.random() * 2000;
-        bp.Q.value = 0.5;
+        bp.type = 'bandpass'; bp.frequency.value = 1500 + Math.random() * 2000; bp.Q.value = 0.5;
         src.connect(bp); bp.connect(g); g.connect(audioCtx.destination);
-        src.start(ct); src.stop(ct + 0.3);
-      }, 800 + i * 200);
+        src.start(ct); src.stop(ct + 0.2);
+      }, 900 + i * 200);
     }
   }
 
-  // Start sound for the tap-to-start screen
   function playStartSound() {
     ensureAudio();
-    const t = now();
-    playNote(392, t, 0.2, 0.4, 'triangle');
-    playNote(523, t + 0.12, 0.2, 0.4, 'triangle');
-    playNote(659, t + 0.24, 0.25, 0.45, 'triangle');
-    playNote(784, t + 0.36, 0.5, 0.5, 'sine');
+    const t = safeNow();
+    playNote(392, t, 0.2, 0.35, 'triangle');
+    playNote(523, t + 0.12, 0.2, 0.35, 'triangle');
+    playNote(659, t + 0.24, 0.25, 0.4, 'triangle');
+    playNote(784, t + 0.36, 0.5, 0.45, 'sine');
   }
 
-  // --- Game state ---
-  const STEPS = [
-    { emoji: '⏰', label: 'Wake Up' },
-    { emoji: '🪥', label: 'Brush Teeth' },
-    { emoji: '👕', label: 'Get Dressed' },
-    { emoji: '🥣', label: 'Eat Breakfast' },
-    { emoji: '🎒', label: 'Grab Bag' },
-  ];
-
-  let currentStep = 0;
-  let shuffledIndices = [];
-
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
+  // =============================
+  //   RENDER
+  // =============================
+  function shuffle(a) {
+    const r = [...a];
+    for (let i = r.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+      [r[i], r[j]] = [r[j], r[i]];
     }
-    return a;
+    return r;
+  }
+
+  // Space stars
+  (function() {
+    const c = document.getElementById('space-stars');
+    for (let i = 0; i < 80; i++) {
+      const s = document.createElement('div');
+      s.className = 'space-star-dot';
+      const sz = 1 + Math.random() * 3;
+      s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s;`;
+      c.appendChild(s);
+    }
+  })();
+
+  function renderLevelSelect() {
+    const grid = document.getElementById('level-grid');
+    grid.innerHTML = '';
+    LEVELS.forEach((lv, i) => {
+      const locked = i > unlockedLevel;
+      const done = completedLevels.includes(i);
+      const card = document.createElement('button');
+      card.className = `level-card lc-${lv.id}${locked ? ' locked' : ''}`;
+      card.innerHTML = `
+        <span class="level-emoji">${lv.icon}</span>
+        <div class="level-info">
+          <span class="level-name">Level ${i+1}: ${lv.name}</span>
+          <span class="level-detail">${lv.steps.length} steps${lv.showLabels ? '' : ' · pictures only'}</span>
+        </div>
+        <span class="level-badge">${locked ? '🔒' : done ? '⭐' : ''}</span>
+      `;
+      if (!locked) card.addEventListener('click', () => startLevel(i));
+      grid.appendChild(card);
+    });
+  }
+
+  function setTheme(lv) {
+    document.body.className = lv.theme;
+    document.getElementById('deco0').textContent = lv.decos[0];
+    document.getElementById('deco1').textContent = lv.decos[1];
+    document.getElementById('deco2').textContent = lv.decos[2];
+  }
+
+  function startLevel(index) {
+    currentLevelIndex = index;
+    currentStep = 0;
+    const lv = LEVELS[index];
+    setTheme(lv);
+    document.getElementById('level-select').classList.add('hidden');
+    document.getElementById('game-container').classList.remove('hidden');
+    document.getElementById('game-icon').textContent = lv.icon;
+    document.getElementById('game-title').textContent = lv.name;
+    document.getElementById('game-subtitle').textContent =
+      lv.showLabels ? 'Tap in the right order!' : 'Tap the pictures in order!';
+    document.getElementById('buttons-area').classList.toggle('cols-3', lv.steps.length > 6);
+    renderProgress(); renderDoneTray(); renderButtons();
   }
 
   function renderProgress() {
     const bar = document.getElementById('progress-bar');
+    const steps = LEVELS[currentLevelIndex].steps;
     bar.innerHTML = '';
-    STEPS.forEach((_, i) => {
-      const star = document.createElement('span');
-      star.className = 'progress-star' + (i < currentStep ? ' done' : '');
-      star.textContent = '⭐';
-      bar.appendChild(star);
-    });
-  }
-
-  function renderButtons() {
-    const area = document.getElementById('buttons-area');
-    area.innerHTML = '';
-    shuffledIndices = shuffle([...Array(STEPS.length).keys()]);
-
-    shuffledIndices.forEach((stepIndex) => {
-      const step = STEPS[stepIndex];
-      const btn = document.createElement('button');
-      btn.className = `routine-btn color-${stepIndex}`;
-      btn.dataset.stepIndex = stepIndex;
-      if (stepIndex < currentStep) btn.classList.add('hidden');
-      btn.innerHTML = `<span class="emoji">${step.emoji}</span>${step.label}`;
-      btn.addEventListener('click', () => handleTap(btn, stepIndex));
-      area.appendChild(btn);
+    steps.forEach((_, i) => {
+      const s = document.createElement('span');
+      s.className = 'progress-star' + (i < currentStep ? ' done' : '');
+      s.textContent = '⭐';
+      bar.appendChild(s);
     });
   }
 
   function renderDoneTray() {
     const tray = document.getElementById('done-tray');
     tray.innerHTML = '<span class="done-tray-label">✅ DONE</span>';
+    const steps = LEVELS[currentLevelIndex].steps;
     for (let i = 0; i < currentStep; i++) {
-      const item = document.createElement('div');
-      item.className = 'done-item';
-      item.textContent = STEPS[i].emoji;
-      tray.appendChild(item);
+      const d = document.createElement('div');
+      d.className = 'done-item';
+      d.textContent = steps[i].emoji;
+      tray.appendChild(d);
     }
+  }
+
+  function renderButtons() {
+    const area = document.getElementById('buttons-area');
+    area.innerHTML = '';
+    const lv = LEVELS[currentLevelIndex];
+    const indices = shuffle([...Array(lv.steps.length).keys()]);
+    indices.forEach(si => {
+      const step = lv.steps[si];
+      const btn = document.createElement('button');
+      const eo = !lv.showLabels;
+      btn.className = `routine-btn c${si % 9}${eo ? ' emoji-only' : ''}`;
+      btn.dataset.stepIndex = si;
+      if (si < currentStep) btn.classList.add('hidden');
+      btn.innerHTML = `<span class="emoji">${step.emoji}</span>${eo ? '' : (step.label || '')}`;
+      btn.addEventListener('click', () => handleTap(btn, si));
+      area.appendChild(btn);
+    });
   }
 
   function handleTap(btn, stepIndex) {
     if (stepIndex === currentStep) {
-      // Correct!
       playCorrectSound();
       btn.classList.add('correct-flash');
       setTimeout(() => {
         btn.classList.add('hidden');
         currentStep++;
-        renderProgress();
-        renderDoneTray();
-
-        if (currentStep >= STEPS.length) {
-          setTimeout(celebrate, 300);
-        }
+        renderProgress(); renderDoneTray();
+        if (currentStep >= LEVELS[currentLevelIndex].steps.length) setTimeout(celebrate, 300);
       }, 350);
     } else {
-      // Wrong
       playWrongSound();
       btn.classList.add('wiggling');
       setTimeout(() => btn.classList.remove('wiggling'), 500);
     }
   }
 
-  // --- Celebration ---
+  // =============================
+  //   CELEBRATION
+  // =============================
   function celebrate() {
     playCelebrationSound();
+    const lv = LEVELS[currentLevelIndex];
+    if (!completedLevels.includes(currentLevelIndex)) {
+      completedLevels.push(currentLevelIndex);
+      localStorage.setItem('anya_completed', JSON.stringify(completedLevels));
+    }
+    if (currentLevelIndex + 1 > unlockedLevel && currentLevelIndex + 1 < LEVELS.length) {
+      unlockedLevel = currentLevelIndex + 1;
+      localStorage.setItem('anya_unlocked', String(unlockedLevel));
+    }
+    document.getElementById('celeb-title').textContent = lv.celebTitle;
+    document.getElementById('celeb-emoji').textContent = lv.celebEmoji;
+    document.getElementById('celeb-sub').textContent = lv.celebSub;
+    document.getElementById('next-lvl-btn').style.display =
+      currentLevelIndex < LEVELS.length - 1 ? '' : 'none';
     document.getElementById('celebration').classList.add('active');
-    launchConfetti();
-    spawnGlitter();
+    launchConfetti(); spawnGlitter();
   }
 
   function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const colors = ['#FF6B9D', '#FFD93D', '#6EC6FF', '#A78BFA', '#4ADE80', '#FF9F43', '#FF6B6B'];
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const colors = ['#FF6B9D','#FFD93D','#6EC6FF','#A78BFA','#4ADE80','#FF9F43','#FF6B6B'];
     const pieces = [];
-
     for (let i = 0; i < 150; i++) {
       pieces.push({
-        x: Math.random() * canvas.width,
-        y: -20 - Math.random() * 200,
-        w: 8 + Math.random() * 8,
-        h: 6 + Math.random() * 6,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        vx: (Math.random() - 0.5) * 4,
-        vy: 2 + Math.random() * 4,
-        rot: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 10,
-        opacity: 1,
+        x: Math.random()*canvas.width, y: -20-Math.random()*200,
+        w: 8+Math.random()*8, h: 6+Math.random()*6,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        vx: (Math.random()-0.5)*4, vy: 2+Math.random()*4,
+        rot: Math.random()*360, rs: (Math.random()-0.5)*10, op: 1,
       });
     }
-
-    let frame = 0;
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let f = 0;
+    (function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
       let alive = false;
       pieces.forEach(p => {
-        if (p.opacity <= 0) return;
-        alive = true;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.05;
-        p.rot += p.rotSpeed;
-        if (p.y > canvas.height - 50) p.opacity -= 0.02;
-
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rot * Math.PI) / 180);
-        ctx.globalAlpha = Math.max(0, p.opacity);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-        ctx.restore();
+        if (p.op <= 0) return; alive = true;
+        p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.rot += p.rs;
+        if (p.y > canvas.height-50) p.op -= 0.02;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.globalAlpha = Math.max(0,p.op); ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
       });
-      frame++;
-      if (alive && frame < 300) requestAnimationFrame(draw);
-      else ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    draw();
+      if (alive && ++f < 300) requestAnimationFrame(draw);
+      else ctx.clearRect(0,0,canvas.width,canvas.height);
+    })();
   }
 
   function spawnGlitter() {
-    const colors = ['#FFD93D', '#FF6B9D', '#A78BFA', '#6EC6FF', '#4ADE80', '#fff'];
-    for (let i = 0; i < 40; i++) {
+    const colors = ['#FFD93D','#FF6B9D','#A78BFA','#6EC6FF','#4ADE80','#fff'];
+    for (let i = 0; i < 35; i++) {
       setTimeout(() => {
-        const el = document.createElement('div');
-        el.className = 'glitter';
-        el.style.left = Math.random() * 100 + 'vw';
-        el.style.top = '-10px';
-        el.style.width = (4 + Math.random() * 8) + 'px';
-        el.style.height = el.style.width;
-        el.style.background = colors[Math.floor(Math.random() * colors.length)];
-        el.style.animationDuration = (2 + Math.random() * 3) + 's';
+        const el = document.createElement('div'); el.className = 'glitter';
+        el.style.left = Math.random()*100+'vw'; el.style.top = '-10px';
+        const s = (4+Math.random()*8)+'px'; el.style.width=s; el.style.height=s;
+        el.style.background = colors[Math.floor(Math.random()*colors.length)];
+        el.style.animationDuration = (2+Math.random()*3)+'s';
         document.body.appendChild(el);
         setTimeout(() => el.remove(), 5000);
       }, i * 80);
     }
   }
 
-  // --- Reset ---
-  function resetGame() {
-    currentStep = 0;
+  // =============================
+  //   NAV
+  // =============================
+  function replayLevel() {
     document.getElementById('celebration').classList.remove('active');
-    const ctx = document.getElementById('confetti-canvas').getContext('2d');
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    renderProgress();
-    renderDoneTray();
-    renderButtons();
+    clearConfetti(); currentStep = 0;
+    renderProgress(); renderDoneTray(); renderButtons();
   }
 
-  // --- Start screen ---
+  function goNextLevel() {
+    document.getElementById('celebration').classList.remove('active');
+    clearConfetti();
+    if (currentLevelIndex < LEVELS.length - 1) startLevel(currentLevelIndex + 1);
+  }
+
+  function goToMenu() {
+    document.getElementById('celebration').classList.remove('active');
+    document.getElementById('game-container').classList.add('hidden');
+    clearConfetti(); document.body.className = '';
+    document.getElementById('level-select').classList.remove('hidden');
+    renderLevelSelect();
+  }
+
+  function clearConfetti() {
+    const c = document.getElementById('confetti-canvas').getContext('2d');
+    c.clearRect(0,0,c.canvas.width,c.canvas.height);
+  }
+
+  document.getElementById('back-btn').addEventListener('click', goToMenu);
+
+  // =============================
+  //   INIT
+  // =============================
   document.getElementById('start-btn').addEventListener('click', () => {
-    ensureAudio();
-    playStartSound();
+    ensureAudio(); playStartSound();
     document.getElementById('start-screen').classList.add('hidden');
-    document.getElementById('game-container').style.display = 'flex';
-    renderProgress();
-    renderDoneTray();
-    renderButtons();
+    document.getElementById('level-select').classList.remove('hidden');
+    renderLevelSelect();
   });
 </script>
 </body>
